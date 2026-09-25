@@ -17,21 +17,28 @@ export default function TelaMedidor({ onSalvar }) {
       return;
     }
 
+    let assinatura = null;
+    let cancelado = false;
+
     Accelerometer.isAvailableAsync().then((suportado) => {
+      if (cancelado) {
+        return;
+      }
+
       setDisponivel(suportado);
+
+      if (suportado && sensorAtivo) {
+        Accelerometer.setUpdateInterval(100);
+        assinatura = Accelerometer.addListener((leitura) => {
+          if (!cancelado) {
+            setDados(leitura);
+          }
+        });
+      }
     });
 
-    Accelerometer.setUpdateInterval(100);
-
-    let assinatura = null;
-
-    if (sensorAtivo) {
-      assinatura = Accelerometer.addListener((leitura) => {
-        setDados(leitura);
-      });
-    }
-
     return () => {
+      cancelado = true;
       if (assinatura) {
         assinatura.remove();
       }
