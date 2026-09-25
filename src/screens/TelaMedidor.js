@@ -45,7 +45,9 @@ export default function TelaMedidor({ onSalvar }) {
     };
   }, [sensorAtivo]);
 
-  const estaNivelado = Math.abs(x) < 0.05 && Math.abs(y) < 0.05;
+  const estaNivelado = Platform.OS === 'web'
+    ? Math.abs(x) < 0.05 && Math.abs(y) < 0.05
+    : Math.abs(x) < 0.08 && Math.abs(Math.abs(y) - 1) < 0.15 && Math.abs(z) < 0.15;
   const bolhaX = Math.min(Math.max(x * 120, -80), 80);
   const bolhaY = Math.min(Math.max(y * 120, -80), 80);
 
@@ -99,7 +101,7 @@ export default function TelaMedidor({ onSalvar }) {
       </Text>
 
       <Text style={styles.status}>
-        {modoWeb ? 'Modo web: mova o mouse no mostrador' : estaNivelado ? 'Nívelado' : 'Movimento detectado'}
+        {modoWeb ? 'Modo web: mova o mouse no mostrador' : estaNivelado ? 'Nivelado na parede' : 'Ajuste o aparelho na parede'}
       </Text>
 
       <View style={styles.botoesContainer}>
